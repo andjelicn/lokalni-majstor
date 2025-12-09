@@ -26,6 +26,29 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/full", async (req, res) => {
+    try {
+    const userId = req.user.id;
+
+    const sql = `
+        SELECT a.*
+        FROM favorites f
+        JOIN ads a ON a.id = f.ad_id
+        WHERE f.user_id = $1
+        ORDER BY f.created_at DESC `;
+
+    const result = await pool.query(sql, [userId]);
+    const items = result.rows || [];
+
+    console.log("favorites FULL debug:", {userId, count: items.length});
+
+    res.json({items});
+}   catch (err) {
+    console.error("GET /favorites/full error", err);
+    res.status(500).json({message: "Greska na serveru0 "});
+    }
+});
+
 router.post("/:adId", async (req, res) => {
     try {
         const userId = req.user.id;
@@ -59,7 +82,7 @@ router.delete("/:adId", async (req, res) => {
         const adId = Number(req.params.adId);
 
         await pool.query(
-            "DELETE FROM favorites WHERE user_id = $1 AND ad_id = $2",
+            `DELETE FROM favorites WHERE user_id = $1 AND ad_id = $2`,
             [userId, adId]
         );
 
