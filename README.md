@@ -113,14 +113,17 @@ Follow the steps below to run the project locally.
 ``cd lokalni-majstor``
 
 Backend Setup
-
-``cd backend``
-
+```bash
+cd backend
+```
 Install dependencies
 
-``npm install``
-
+```bash
+npm install
+```
 Create an .env file:
+
+```bash
 
 ``PORT=5000``
 
@@ -128,12 +131,15 @@ Create an .env file:
 
 ``JWT_SECRET=your-secret-key``
 
+```
 Run database migrations or create required tables manually if 
 needed.
 
 Start the backend server: 
 
-``npm start``
+```bash
+npm start
+```
 
 The backend should now be running on:
 
@@ -143,11 +149,15 @@ The backend should now be running on:
 
 Open a new terminal and navigate into the frontend folder:
 
-``cd frontend``
+```bash
+cd frontend
+```
 
 Install dependencies:
 
-``npm install``
+```bash
+npm install
+```
 
 Create a .env file:
 
@@ -155,7 +165,9 @@ Create a .env file:
 
 Start the development server:
 
-``npm run dev``
+```bash
+npm run dev
+```
 
 Your frontend should now be available at:
 
