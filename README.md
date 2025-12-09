@@ -1,108 +1,172 @@
-🚀 Features
-👤 User System
+# Lokalni Majstor
 
-Registration & Login (JWT Auth)
+Lokalni Majstor is a full-stack web application designed to connect local handymen and service providers with users who need quick and reliable assistance.  
+The goal of the project is to offer a clean, fast and modern marketplace where anyone can create service listings, browse available offers, save favorites, and manage their profile with ease.
 
-Two roles:
+This project is currently in active development.
 
-User — can browse and contact workers
+---
 
-Majstor — can create and manage ads
+## 🚀 Tech Stack
 
-(Admin role planned for v2)
+### **Frontend**
+- React (Vite)
+- React Router
+- Axios
+- TailwindCSS (custom UI enhancements)
+- Hot Toast notifications
+- LocalStorage state persistence
+- Responsive design (mobile-first)
 
-📢 Ads (Oglasi)
+### **Backend**
+- Node.js + Express
+- PostgreSQL + pg
+- JWT authentication
+- Multer image uploading
+- REST API architecture
 
-Create an ad with title, description, category, city, and price
+---
 
-View all ads on the homepage
+## ✨ Features Implemented
 
-Filter by category or location
+### **🔐 Authentication**
+- User registration and login
+- JWT-based session handling stored in localStorage
+- Protected routes on backend + frontend
 
-View detailed ad page
+### **👤 User Profile**
+- User info display
+- List of user's own published ads
+- Ability to edit or delete each ad
+- Proper backend filtering by `owner_id`
 
-Edit and delete ads (soon to be implemented)
+### **📢 Ads System**
+- Create new ads with:
+  - title  
+  - description  
+  - category  
+  - location  
+  - price  
+  - image upload  
+- Edit existing ads
+- Delete ads
+- Server-side image storage with Multer
+- Clean and optimized SQL queries
 
-Pagination support (if implemented in backend)
+### **🔍 Search & Filtering**
+- Keyword search (accent-insensitive)
+- Category filtering
+- City filtering
+- Pagination (page, limit)
+- Search tokens processed to handle multi-word queries
 
-Image upload for ads
+### **❤️ Favorites System**
+- Add or remove favorites with a single click
+- Animated heart icon
+- Hot Toast success messages
+- Favorites stored in database per user
+- Persistent across refresh and sessions
+- Proper syncing on login/logout
+- Dedicated endpoint:  
+  - `GET /api/favorites`
+  - `POST /api/favorites/:id`
+  - `DELETE /api/favorites/:id`
 
-📲 Contact System
+### **🖼 Ad Details Page**
+- Full-screen lightbox image viewer
+- Carousel navigation (keyboard + arrows)
+- Clean UI layout
+- Share/copy link support
+- Displays:
+  - owner details  
+  - contact button  
+  - formatted date  
+  - dynamic “time ago”  
 
-Display phone number / email for contacting workers
+### **🌐 Main Homepage**
+- Grid layout for ads
+- Category shortcuts
+- Search bar
+- Pagination buttons
+- Responsive design for mobile
 
-Viber / WhatsApp link support (optional)
+### **📱 Mobile Navigation**
+- Slide-down menu with:
+  - My Ads  
+  - Favorites  
+  - Profile  
+  - Logout  
+- Hamburger menu animation
 
-🏗️ Tech Stack
-Backend
+---
 
-Node.js
+## 🚀 Installation & Setup Guide
 
-Express
+Follow the steps below to run the project locally.
 
-PostgreSQL
+---
 
-pg library
+### 1️⃣ Clone the Repository
 
-JWT Authentication
+``git clone https://github.com/your-username/your-repo-name.git``
 
-Bcrypt password hashing
+``cd your-repo-name``
 
-Frontend
+Backend Setup
 
-React (Vite)
+``cd backend``
 
-Axios
+Install dependencies
 
-React Router
+``npm install``
 
-TailwindCSS 
+Create an .env file:
 
-📁 Project Structure
-lokalni-majstor/
-   backend/
-      src/
-      package.json
-   frontend/
-      src/
-      package.json
+``PORT=5000``
 
-⚙️ How to Run Locally
-Backend:
-cd backend
-npm install
-npm start
+``DATABASE_URL=your-postgresql-connection-string``
 
+``JWT_SECRET=your-secret-key``
 
-Create .env in backend:
+Run database migrations or create required tables manually if 
+needed.
 
-DATABASE_URL=your-db-url
-JWT_SECRET=your-secret
-PORT=5000
+Start the backend server: 
 
-Frontend:
-cd frontend
-npm install
-npm run dev
+``npm start``
 
-📝 Todo / Upcoming Features
+The backend should now be running on:
 
- Edit ads (in progress)
+``http://localhost:5000``
 
- User roles: admin
+3️⃣ Frontend Setup
 
- Report system for ads
+Open a new terminal and navigate into the frontend folder:
 
- Email notification service
+``cd frontend``
 
- Full responsive UI polish
+Install dependencies:
 
-👤 Author
+``npm install``
 
-Nikolaj Anđelić
-Banja Luka 🇧🇦
-Full-stack developer in progress.
+Create a .env file:
 
-📄 License
+``VITE_API_URL=http://localhost:5000/api``
 
-MIT License (free to use with credit to the author)
+Start the development server:
+
+``npm run dev``
+
+Your frontend should now be available at:
+
+``http://localhost:5173``
+
+4️⃣ Login & Usage
+
+	•	Register a new account from the frontend.
+   
+	•	Log in to receive a JWT token.
+   
+	•	Tokens are automatically saved and attached to authenticated requests.
+   
+	•	You can now create ads, edit them, delete them, and add/remove favorites.
