@@ -1,5 +1,10 @@
 # Lokalni Majstor
 
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![NodeJS](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node-dot-js&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+
 Lokalni Majstor is a full-stack web application designed to connect local handymen and service providers with users who need quick and reliable assistance.  
 The goal of the project is to offer a clean, fast and modern marketplace where anyone can create service listings, browse available offers, save favorites, and manage their profile with ease.
 
