@@ -65,13 +65,10 @@ export default function AdPage() {
                 setErr("");
             }   catch (e) {
                 console.error("Greska pri ucitavanju oglasa", e);
-                if (!active) return;
-                setErr("Greska pri ucitavanju oglasa");
             }   finally {
                 if (active) setLoading(false);
             }
         }
-
         load();
         return () => {
             active = false;
@@ -250,22 +247,22 @@ export default function AdPage() {
                             <div className="mt-2 flex flex-wrap items-center gap-2">
                                 {ad.category && (
                                     <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
-                    {ad.category}
-                  </span>
+                                      {ad.category}
+                                     </span>
                                 )}
                                 {city && (
                                     <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700">
-                    {city}
-                  </span>
+                                       {city}
+                                    </span>
                                 )}
                             </div>
                             <div className="mt-3 text-sm text-slate-500">
                                 {ad.created_at && (
                                     <span>
-                    Objavljeno:{" "}
+                                        Objavljeno:{" "}
                                         {new Date(ad.created_at).toLocaleDateString("sr-Latn-BA")} ·{" "}
                                         {timeAgo(ad.created_at)}
-                  </span>
+                                     </span>
                                 )}
                             </div>
                         </div>

@@ -10,7 +10,8 @@ import NewAdPage from "./pages/NewAdPage";
 import ProfilePage from "./pages/ProfilePage";
 import FavoritesPage from "./pages/FavoritesPage.jsx";
 import MyAdsPage from "./pages/MyAdsPage.jsx";
-import { Toaster } from "react-hot-toast"
+import { EditAdPage } from "./pages/EditAdPage";
+import { Toaster } from "react-hot-toast";
 import './App.css'
 
 function RequireAuth({ children }) {
@@ -55,6 +56,15 @@ export default function App() {
             </RequireAuth>
           }
         />
+
+        <Route
+          path="/edit-ad/:id"
+          element={
+           <RequireAuth>
+                <EditAdPage />
+           </RequireAuth>
+          }
+          />
 
         <Route
           path="/pretraga"
