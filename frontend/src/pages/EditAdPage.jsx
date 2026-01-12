@@ -11,12 +11,36 @@ export function EditAdPage() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const didInitForm = useRef(false);
 
 
-  function handleSubmit(e) {
-    e.preventDefault();
+ async function handleSubmit(e) {
+   e.preventDefault();
+
+   if (!title.trim()) {
+     setErr("Naslov je obavezan.");
+     return;
+   }
+   setSaving(true);
+   setErr("");
+
+   try {
+     const payload = {
+       title: title.trim(),
+       description: description.trim(),
+     };
+
+     const res = await api.put(`/ads/${id}`, payload);
+     setAd(res.data);
+   }  catch (e) {
+     console.error("Greska pri uredjivanju oglasa", e);
+     setErr("Greska pri uredjivanju oglasa");
+   }  finally {
+     setSaving(false);
+   }
+
   }
 
   useEffect(() => {
@@ -82,6 +106,11 @@ export function EditAdPage() {
   return (
     <div className="max-w-5xl mx-auto mt-10">
       <h1 className="text-2xl font-bold text-slate-900">Uredi oglas</h1>
+      {err && (
+      <div className="text-red-600 text-sm mb-6">
+        {err}
+      </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <div>
@@ -101,7 +130,13 @@ export function EditAdPage() {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-        <button type="submit">Sacuvaj izmjene</button>
+        <button
+          type="submit"
+          disabled={saving}
+          className="mt-4 inline-flex items-center rounded-lg bg-sky-400 px-4 py-2 text-white disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {saving ? "Cuvam..." : "Sacuvaj"}
+        </button>
       </form>
     </div>
   );
