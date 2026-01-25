@@ -12,6 +12,7 @@ export function EditAdPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
+  const [category, setCategory] = useState("");
 
   const didInitForm = useRef(false);
 
@@ -75,6 +76,7 @@ export function EditAdPage() {
 
     setTitle(ad.title);
     setDescription(ad.description || "");
+    setCategory(ad.category || "");
   }, [ad]);
 
   if (loading) {
@@ -129,6 +131,22 @@ export function EditAdPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+        </div>
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium text-slate-700 mb-1">Kategorija</label>
+          <select
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            >
+            <option value="">Izaberi kategoriju</option>
+            <option value="">Drvoprerada</option>
+            <option value="">Auto i transport</option>
+            <option value="">Gradjevina</option>
+            <option value="">Vodoinstalacije</option>
+            <option value="">Ciscenje i odrzavanje</option>
+            <option value="">Ostale kategorije</option>
+          </select>
         </div>
         <button
           type="submit"
