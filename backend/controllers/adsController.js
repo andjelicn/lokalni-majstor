@@ -88,8 +88,8 @@ exports.getAdById = async (req, res) => {
   }
 };
 
-exports.updateAd = async (req, res) => {
 
+exports.updateAd = async (req, res) => {
  const existingAd = await getAdByIdModel(req.params.id);
  if (!existingAd) return res.status(404).json({ message: "Oglas nije pronadjen."})
 
@@ -102,6 +102,8 @@ exports.updateAd = async (req, res) => {
       category:    req.body.category ?? existingAd.category,
       location:    req.body.location ?? existingAd.location,
       image_url:   req.body.image_url ?? existingAd.image_url,
+      main_category: req.body.main_category.trim() ? req.body.main_category : existingAd.main_category,
+      subcategory: req.body.subcategory?.trim() ? req.body.subcategory : existingAd.subcategory,
       price:       req.body.price ?? existingAd.price,
       status:     req.body.status ?? existingAd.status,
     });

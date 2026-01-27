@@ -10,8 +10,6 @@ async function createAd({ title, description, category = null, location = null, 
   return rows[0];
 }
 
-console.log("HIT getallads");
-
 async function getAllAds() {
   const { rows } = await pool.query(
     `SELECT id, title, description, category, location, image_url, price, owner_id, status, created_at
@@ -24,20 +22,21 @@ async function getAllAds() {
 
 async function getAdById(id) {
   const { rows } = await pool.query(
-    `SELECT id, title, description, category, location, image_url, price, owner_id, status, created_at
+    `SELECT id, title, description, category, location, image_url, price, owner_id, status, created_at, main_category, subcategory
      FROM ads WHERE id = $1 AND status = 'active'`,
     [id]
   );
   return rows[0] || null;
 }
 
-async function updateAd({ id, title, description, category, location, image_url, price, owner_id }) {
+async function updateAd({ id, title, description, category, location, image_url, price, owner_id, main_category, subcategory }) {
+  const finalCategory = subcategory || category|| main_category || null;
   const { rows } = await pool.query(
     `UPDATE ads
-       SET title=$1, description=$2, category=$3, location=$4, image_url=$5, price=$6
-     WHERE id=$7 AND owner_id=$8
-     RETURNING id, title, description, category, location, image_url, price, owner_id, status, created_at`,
-    [title, description, category, location, image_url, price, id, owner_id]
+       SET title=$1, description=$2, category=$3, location=$4, image_url=$5, price=$6, main_category=$7, subcategory=$8
+     WHERE id=$9 AND owner_id=$10
+     RETURNING id, title, description, category, location, image_url, price, owner_id, status, created_at, main_category, subcategory`,
+    [title, description, finalCategory, location, image_url, price, main_category, subcategory, id, owner_id]
   );
   return rows[0] || null;
 }

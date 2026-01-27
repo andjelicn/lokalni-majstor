@@ -12,9 +12,14 @@ export function EditAdPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
-  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [main_category, setMainCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
 
   const didInitForm = useRef(false);
+
+  const selectedMain = categories.find((c) => c.name === main_category);
+  const subOptions = selectedMain?.subcategories ?? [];
 
 
  async function handleSubmit(e) {
@@ -31,6 +36,8 @@ export function EditAdPage() {
      const payload = {
        title: title.trim(),
        description: description.trim(),
+       main_category,
+       subcategory: subcategory || null,
      };
 
      const res = await api.put(`/ads/${id}`, payload);
@@ -61,7 +68,6 @@ export function EditAdPage() {
         if (active) setLoading(false);
       }
     }
-
     didInitForm.current = false;
     load();
     return () => {
@@ -69,14 +75,31 @@ export function EditAdPage() {
     };
   }, [id]);
 
+  useEffect(() => {
+    let active = true;
+
+    (async () => {
+      try {
+        const res = await api.get("/ads/categories");
+        if (!active) return;
+        setCategories(Array.isArray(res.data.categories) ? res.data.categories : []);
+      } catch (e) {
+        console.error("Greska pri ucitavanju kategorija", e);
+      }
+    })();
+
+    return () => { active = false; };
+    },[]);
 
   useEffect(() => {
     if (!ad) return;
-    didInitForm.current = true;
 
     setTitle(ad.title);
     setDescription(ad.description || "");
-    setCategory(ad.category || "");
+    setMainCategory(ad.main_category || "");
+    setSubcategory(ad.subcategory || "");
+
+    didInitForm.current = true;
   }, [ad]);
 
   if (loading) {
@@ -133,20 +156,34 @@ export function EditAdPage() {
           />
         </div>
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-slate-700 mb-1">Kategorija</label>
+          <label>Kategorija</label>
           <select
-            id="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            id="main_category"
+            value={main_category}
+            onChange={(e) => {
+              setMainCategory(e.target.value)
+              setSubcategory("");
+              }}
             >
             <option value="">Izaberi kategoriju</option>
-            <option value="">Drvoprerada</option>
-            <option value="">Auto i transport</option>
-            <option value="">Gradjevina</option>
-            <option value="">Vodoinstalacije</option>
-            <option value="">Ciscenje i odrzavanje</option>
-            <option value="">Ostale kategorije</option>
+            {categories.map((c) => (
+              <option key={c.name} value={c.name}>{c.name}</option>
+            ))}
           </select>
+
+          <label>Podkategorija</label>
+          <select
+          id="subcategory"
+          value={subcategory}
+          onChange={(e) => setSubcategory(e.target.value)}
+          disabled={!main_category}
+          >
+            <option value="">Izaberi podkategoriju</option>
+            {subOptions.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+
         </div>
         <button
           type="submit"
