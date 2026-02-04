@@ -304,7 +304,7 @@ export default function AdPage() {
                             {user?.id === ad.owner_id ? (
                                 <div className="flex gap-2">
                                     <Link
-                                        to={`/ads/${ad.id}/edit`}
+                                        to={`/edit-ad/${ad.id}/`}
                                         className="flex-1 inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
                                     >
                                         Uredi

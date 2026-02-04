@@ -54,15 +54,27 @@ router.post("/", verifyToken, upload.single("image"), async (req, res) => {
 // LIST + SEARCH
 router.get("/", async (req, res) => {
   try {
-    const { q, category, city, owner, page = 1, limit = 24 } = req.query;
+    const { q, category, main_category, subcategory, city, owner, page = 1, limit = 24 } = req.query;
 
     const where = [];
     const values = [];
     let p = 1;
 
+    where.push(`a.status = 'active'`);
+
     if (category) {
       where.push(`LOWER(a.category) = $${p++}`);
       values.push(String(category).toLowerCase());
+    }
+
+    if (main_category) {
+        where.push(`LOWER(a.main_category) = $${p++}`);
+        values.push(String(main_category).toLowerCase());
+    }
+
+    if (subcategory) {
+        where.push(`LOWER(a.subcategory) = $${p++}`);
+        values.push(String(subcategory).toLowerCase());
     }
 
     if (city) {
@@ -118,7 +130,6 @@ router.get("/", async (req, res) => {
       SELECT a.*, COUNT(*) OVER() AS __total
       FROM ads a
       ${whereSql}
-      WHERE status = 'active'
       ORDER BY a.created_at DESC
       LIMIT $${p++} OFFSET $${p++};
     `;
