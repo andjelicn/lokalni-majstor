@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { ENTITETI, LOKACIJE } from "../data/locations.js";
 import api from "../services/api";
 
 export function EditAdPage() {
@@ -14,11 +15,15 @@ export function EditAdPage() {
   const [categories, setCategories] = useState([]);
   const [main_category, setMainCategory] = useState("");
   const [subcategory, setSubcategory] = useState("");
+  const [entitet, setEntitet] = useState("");
+  const [podrucje, setPodrucje] = useState("");
+  const [grad, setGrad] = useState("");
 
   const didInitForm = useRef(false);
 
   const selectedMain = categories.find((c) => c.name === main_category);
   const subOptions = selectedMain?.subcategories ?? [];
+
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -30,12 +35,18 @@ export function EditAdPage() {
     setSaving(true);
     setErr("");
 
+    const location = [entitet, podrucje, grad]
+        .map(x => String(x || "").trim())
+        .filter(Boolean)
+        .join(" > ");
+
     try {
       const payload = {
         title: title.trim(),
         description: description.trim(),
         main_category,
         subcategory: subcategory || null,
+        location: location || null,
       };
 
       const res = await api.put(`/ads/${id}`, payload);
@@ -47,6 +58,16 @@ export function EditAdPage() {
       setSaving(false);
     }
   }
+
+  const podrucjaOpcije = useMemo(() => {
+    if (!entitet) return [];
+    return Object.keys(LOKACIJE[entitet] || {});
+  }, [entitet]);
+
+  const gradoviOpcije = useMemo(() => {
+    if (!entitet || !podrucje) return [];
+    return LOKACIJE[entitet]?.[podrucje] || [];
+  }, [entitet, podrucje]);
 
   useEffect(() => {
     let active = true;
@@ -90,13 +111,21 @@ export function EditAdPage() {
     };
   }, []);
 
+
   useEffect(() => {
     if (!ad) return;
+
+    const loc = (ad.location || "").split(">").map(s => s.trim());
 
     setTitle(ad.title);
     setDescription(ad.description || "");
     setMainCategory(ad.main_category || "");
     setSubcategory(ad.subcategory || "");
+    console.log("RAW locatio:", ad.location);
+    console.log("SPLIT LOC:", loc);
+    setEntitet(loc[0] || "");
+    setPodrucje(loc[1] || "");
+    setGrad(loc[2] || "");
 
     didInitForm.current = true;
   }, [ad]);
@@ -125,7 +154,7 @@ export function EditAdPage() {
 
   return (
     <div className="max-w-5xl mx-auto mt-10">
-      <h1 className="text-2xl font-bold text-slate-900">Uredi oglas</h1>
+      <h1 className="mb-4 text-2xl font-bold text-slate-900">Uredi oglas</h1>
       {err && <div className="text-red-600 text-sm mb-6">{err}</div>}
 
       <form onSubmit={handleSubmit}>
@@ -151,6 +180,113 @@ export function EditAdPage() {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
+          {/*  LOKACIJA */}
+          <div className="mb-6">
+            <h2 className="text-base font-medium text-slate-900">Lokacija</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Izaberi entitet, zatim podrucje i grad.
+            </p>
+          </div>
+
+          {/* ENTITET */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Entitet
+            </label>
+
+            <div className="relative">
+              <select
+                value={entitet}
+                onChange={(e) => {
+                    setEntitet(e.target.value);
+                    setPodrucje("");
+                    setGrad("");
+                }}
+                className="w-full appearance-none rounded-xl border border-slate-300
+                          bg-white px-4 py-2.5 pr-10 text-slate-900 shadow-sm
+                          outline-none focus:border-sky-400
+                          focus:ring-2 focus:ring-sky-400/50"
+                >
+                  <option value=""> Izaberi entitet</option>
+
+                {ENTITETI.map((e) => (
+                    <option key={e} value={e}>{e}</option>
+                ))}
+              </select>
+
+              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
+                ▼
+              </span>
+            </div>
+          </div>
+
+          {/* KANTON ILI REGIJA */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Kanton/Regija
+            </label>
+            
+            <div className="relative">
+              <select
+                value={podrucje}
+                onChange={(e) => {
+                  setPodrucje(e.target.value);
+                  setGrad("");
+                }}
+                disabled={!entitet}
+                className="w-full appearance-none rounded-xl border border-slate-300
+                          bg-white px-4 py-2.5 pr-10 text-slate-900 shadow-sm
+                          outline-none focus:border-sky-400
+                          focus:ring-2 focus:ring-sky-400/50"
+                >
+                  <option value=""> Izaberi kanton ili regiju</option>
+
+                {podrucjaOpcije.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+
+              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
+                ▼
+              </span>
+            </div>
+          </div>
+
+          {/* GRADOVI */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Grad
+            </label>
+
+            <div className="relative">
+              <select
+                value={grad}
+                onChange={(e) => {
+                  setGrad(e.target.value);
+                }}
+                disabled={!podrucje}
+                className="w-full appearance-none rounded-xl border border-slate-300
+                          bg-white px-4 py-2.5 pr-10 text-slate-900 shadow-sm
+                          outline-none focus:border-sky-400
+                          focus:ring-2 focus:ring-sky-400/50"
+                >
+                  <option value=""> Izaberi grad</option>
+
+                {gradoviOpcije.map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+
+              <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
+                ▼
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* KATEGORIJE */}
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm gap-6">
           <div className="mb-4">
             <h2 className="text-base font-medium text-slate-900">Kategorija i podkategorija</h2>
@@ -236,7 +372,6 @@ export function EditAdPage() {
             </div>
           </div>
         </div>
-
         <button
           type="submit"
           className="mt-4 inline-flex items-center rounded-lg bg-sky-500 px-4 py-2 text-white hover:bg-sky-600 disabled:opacity-60"
