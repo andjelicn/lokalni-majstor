@@ -188,4 +188,6 @@ router.patch("/:id/status", verifyToken, adsController.updateAdStatus);
 
 router.delete("/:id", verifyToken, adsController.deleteAd);
 
+router.post("/:id/view", verifyToken, adsController.registerAdView);
+
 module.exports = router;

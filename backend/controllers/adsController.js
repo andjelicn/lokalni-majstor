@@ -7,6 +7,8 @@ const {
   getCategories,
   updateAdStatus: updateAdStatusModel,
 } = require('../models/ads');
+const pool = require("../models/db");
+const countRes = require("pg/lib/query");
 
 exports.postAd = async (req, res) => {
   try {
@@ -150,4 +152,71 @@ exports.updateAdStatus = async (req, res) => {
         res.status(500).json({ message: "Greska pri promjeni statusa" });
     }
 
+};
+
+exports.registerAdView = async (req, res) => {
+    try {
+       const adId = Number(req.params.id);
+       if (!Number.isFinite(adId)) {
+           return res.status(400).json({ message: "Neispravan ad id." });
+       }
+
+       const userId = req.user?.id || null;
+       const fingerprint = req.headers['x-view-fingerprint'] || null;
+
+       if (!userId && !fingerprint) {
+           return res.status(400).json({ message: "Neispravana identifikacija korisnika" });
+       }
+
+    const since = "NOW() - INTERVAL '24 hours'";
+
+    let existsQuery;
+    let existsParams;
+
+    if (userId) {
+        existsQuery = `
+            SELECT 1
+            FROM public.ad_views
+            WHERE ad_id = $1
+             AND viewer_user_id = $2
+             AND viewed_at >=  ${since}
+            LIMIT 1`;
+        existsParams = [adId, userId];
+    }   else {
+        existsQuery = `
+            SELECT 1
+            FROM public.ad_views
+            WHERE ad_id = $1
+             AND fingerprint = $2
+             AND viewed_at >=  ${since}
+            LIMIT 1`;
+        existsParams = [adId, fingerprint];
+    }
+
+    const existsRes = await pool.query(existsQuery, existsParams);
+
+    if (existsRes.rows.length > 0) {
+        const countRes = await pool.query(
+            `SELECT COUNT(*)::int AS views FROM public.ad_views WHERE ad_id = $1`,
+            [adId]
+        );
+        return res.json({ registered: false, views: countRes.rows[0].views });
+    }
+
+    await pool.query(
+        `INSERT INTO public.ad_views (ad_id, viewer_user_id, fingerprint, viewed_at)
+         VALUES ($1, $2, $3, NOW())`,
+        [adId, userId, fingerprint]
+    );
+
+    const CountRes = await pool.query(
+        `SELECT COUNT(*)::int AS views FROM public.ad_views WHERE ad_id = $1`,
+        [adId]
+    );
+
+    return res.json({ registered: true, views: CountRes.rows[0].views });
+ }  catch (err) {
+    console.error("Greska registerAdView;", err);
+    return res.status(500).json({message: "Greska na serveru"});
+    }
 };
