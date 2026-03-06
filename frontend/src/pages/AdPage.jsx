@@ -34,6 +34,7 @@ export default function AdPage() {
     const [ad, setAd] = useState(null);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState("");
+    const [views, setViews] = useState(null);
     const adIdNum = ad ? Number(ad.id) : null;
 
     const isFav =
@@ -120,6 +121,20 @@ export default function AdPage() {
         }
     }
 
+    async function registerAdView(adId) {
+      try {
+        const fingerprint = getOrCreateFingerprint();
+        const res = await api.post(`/ads/${adId}/view`, {}, {
+          headers: {
+            "content-type": "application/json",
+            "x-view-fingerprint": fingerprint },
+        });
+        return res.data;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     function handleToggleFavorite() {
         if (!ad) return;
 
@@ -131,6 +146,16 @@ export default function AdPage() {
         }   else {
             toast.success("Dodano u omiljene");
         }
+    }
+
+    function getOrCreateFingerprint() {
+      const fingerprint = localStorage.getItem("fingerprint");
+      if (!fingerprint) {
+        const newFp = Math.random().toString(36).slice(2);
+        localStorage.setItem("fingerprint", newFp);
+        return newFp;
+      }
+      return fingerprint;
     }
 
     function openLightbox(i = 0) {
@@ -167,6 +192,14 @@ export default function AdPage() {
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
     }, [isOpen, images]);
+
+    useEffect(() => {
+      const run = async () => {
+      const data = await registerAdView(id);
+      setViews(data.views);
+      };
+      run()
+    }, [id]);
 
     // LOADING
     if (loading) {
@@ -245,6 +278,11 @@ export default function AdPage() {
                         <div>
                             <h1 className="text-2xl font-bold text-slate-900">{ad.title}</h1>
                             <div className="mt-2 flex flex-wrap items-center gap-2">
+                              {views && (
+                                <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                                  Broj pregleda: {views}
+                                </span>
+                              )}
                                 {ad.category && (
                                     <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
                                       {ad.category}

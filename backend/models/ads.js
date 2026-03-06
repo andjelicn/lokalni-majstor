@@ -22,10 +22,11 @@ async function getAllAds() {
 
 async function getAdById(id) {
   const { rows } = await pool.query(
-    `SELECT id, title, description, category, location, image_url, price, owner_id, status, created_at, main_category, subcategory
-     FROM ads WHERE id = $1 AND status = 'active'`,
-    [id]
-  );
+    `SELECT ads.id, title, description, category, location, image_url, price, owner_id, status, created_at, main_category, subcategory
+     FROM ads 
+     LEFT JOIN ad_views ON ads.id = ad_views.ad_id
+     WHERE ads.id = $1 AND status = 'active'
+     GROUP BY ads.id`, [id]);
   return rows[0] || null;
 }
 
