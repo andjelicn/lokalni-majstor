@@ -178,6 +178,8 @@ router.get("/my", verifyToken, async (req, res) => {
     }
 });
 
+// Routes
+
 router.get("/categories", adsController.getCategories);
 
 router.get("/:id", adsController.getAdById);
